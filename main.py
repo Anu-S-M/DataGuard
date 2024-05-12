@@ -1,21 +1,18 @@
 import os
 import hashlib
-import uvicorn
-import watchdog
-import werkzeug
-
 from datetime import datetime
 from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.templating import Jinja2Templates
-from db import *
+from db import *  # Make sure the 'db' module is available
 from notify import apobj
+import uvicorn  # Import uvicorn
 
 FILES_DIRECTORY = os.getenv("FILES_DIRECTORY", "./monito")
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
-
 def calculate_hash(file_path):
     with open(file_path, "rb") as file:
         sha256_hash = hashlib.sha256()
@@ -110,17 +107,18 @@ def read_files():
                             "last_modified": i.last_modified})
     return {"files": files_final}
 
+
 if __name__ == "__main__":
     create_table()
     observer = Observer()
-    event_handler = watchdog.events.FileSystemEventHandler()
+    event_handler = FileSystemEventHandler()  # Use the correct class name
     event_handler.on_modified = on_modified
     observer.schedule(event_handler, path=FILES_DIRECTORY, recursive=True)
     observer.start()
 
-    try:
-        first_run()
-        uvicorn.run(app, host="0.0.0.0", port=8000)
-    except KeyboardInterrupt:
-        observer.stop()
-    observer.join()
+    # Run the FastAPI app using Uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+
+
+
+
