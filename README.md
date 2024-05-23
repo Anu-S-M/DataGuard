@@ -12,6 +12,6 @@ A File Integrity Monitor (FIM) is a tool designed to continuously monitor the in
 To install the File Integrity Monitor, follow these steps:
 
 ```bash
-git clone <repository_url>
-cd file-integrity-monitor
+git clone https://github.com/Anu-S-M/DataGuard.git
+cd DataGuard
 python main.py
